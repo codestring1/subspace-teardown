@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"/>
+<meta name="theme-color" content="#0b0e14"/>
+<title>Subspace | Subscription Management Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  /* Enterprise Slate & Purple Theme */
+  --c-navy: #242547;
+  --c-deep-purple: #36136E;
+  --c-purple: #882ECA;
+  --c-mauve: #B495A4;
+  --c-mint: #61D29A;
+  
+  --c-bg: #090a0f;
+  --c-surface: #11141d;
+  --c-surface-hover: #171b26;
+  --c-border: #1e2433;
+  --c-text: #f3f4f6;
+  --c-text-muted: #9ca3af;
+  
+  --c-danger: #ef4444;
+  --c-warning: #f59e0b;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;background:var(--c-bg);color:var(--c-text)}
+a{text-decoration:none;color:inherit}
+button,input,select{font-family:'Inter',sans-serif;outline:none}
+img{max-width:100%;display:block}
+
+::-webkit-scrollbar {width: 6px;height: 6px;}
+::-webkit-scrollbar-track {background: transparent;}
+::-webkit-scrollbar-thumb {background: var(--c-border);border-radius: 10px;}
+::-webkit-scrollbar-thumb:hover {background: var(--c-navy);}
+
+.site-shell{min-height:100vh;display:flex;flex-direction:column;align-items:center;background:var(--c-bg);overflow-x:hidden}
+.app-column{width:100%;max-width:1440px;min-height:100vh;display:flex;flex-direction:column;position:relative}
+
+.desktop-header{background:var(--c-surface);border-bottom:1px solid var(--c-border);position:sticky;top:0;z-index:50;display:flex;align-items:center;padding:12px 24px;gap:24px}
+.header-logo-group{display:flex;align-items:center;gap:20px;flex-shrink:0}
+.header-logo-text{font-size:22px;font-weight:800;color:var(--c-text);letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
+.header-logo-icon{width:24px;height:24px;background:var(--c-purple);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.header-delivery-info{display:none;flex-direction:column;font-size:11px;color:var(--c-text-muted);cursor:pointer}
+@media(min-width:1024px){.header-delivery-info{display:flex}}
+.delivery-title{color:var(--c-text);font-weight:600;font-size:12px;display:flex;align-items:center;gap:4px}
+
+.desktop-nav{display:none;align-items:center;gap:12px;flex:1;justify-content:center}
+@media(min-width:768px){.desktop-nav{display:flex}}
+.nav-link{font-size:14px;font-weight:500;color:var(--c-text-muted);cursor:pointer;transition:color .2s, background .2s;padding:8px 16px;border-radius:999px;white-space:nowrap}
+.nav-link:hover{color:var(--c-text);background:var(--c-border)}
+.nav-link.active{color:var(--c-text);font-weight:600;background:var(--c-border)}
+
+.header-actions{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.search-wrapper{display:flex;align-items:center;gap:8px;background:var(--c-bg);border:1px solid var(--c-border);border-radius:999px;padding:8px 16px;width:240px;transition:border-color .2s}
+.search-wrapper:focus-within{border-color:var(--c-purple);box-shadow:0 0 0 1px rgba(136,46,202,.2)}
+.search-wrapper input{background:transparent;border:none;color:var(--c-text);font-size:13px;width:100%}
+.search-wrapper input::placeholder{color:#6b7280}
+.lang-selector{font-size:13px;font-weight:600;color:#d1d5db;cursor:pointer;display:flex;align-items:center;gap:4px}
+.user-avatar-btn{width:32px;height:32px;border-radius:50%;background:var(--c-navy);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:14px;border:1px solid var(--c-deep-purple)}
+
+.ticker-bar{background:var(--c-bg);border-bottom:1px solid var(--c-border);padding:8px 0;overflow:hidden;white-space:nowrap;display:flex;align-items:center}
+.ticker-content{display:inline-block;animation:ticker 30s linear infinite;font-size:12px;color:var(--c-text-muted)}
+.ticker-content:hover{animation-play-state:paused}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:inline-block;margin-right:24px}
+.ticker-item span.highlight{color:var(--c-mint);font-weight:700}
+.ticker-divider{display:inline-block;width:1px;height:12px;background:var(--c-border);margin:0 24px;vertical-align:middle}
+
+.page{display:none;flex:1;overflow-y:auto;padding-bottom:100px;width:100%;max-width:1200px;margin:0 auto}
+.page.active{display:block}
+
+.hero-carousel-section{position:relative;margin:32px 24px;display:flex;align-items:center;justify-content:center}
+.carousel-viewport{width:100%;overflow:hidden;border-radius:16px}
+.carousel-track{display:flex;gap:20px;transition:transform 0.4s ease-in-out}
+.carousel-slide{min-width:calc(33.333% - 14px);height:240px;border-radius:16px;background:var(--c-surface);flex-shrink:0;position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--c-border)}
+@media(max-width:1024px){.carousel-slide{min-width:calc(50% - 10px)}}
+@media(max-width:640px){.carousel-slide{min-width:100%}}
+.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.4);border:1px solid var(--c-border);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;backdrop-filter:blur(4px);transition:background .2s}
+.carousel-arrow:hover{background:rgba(0,0,0,.6)}
+.arrow-left{left:10px}
+.arrow-right{right:10px}
+.carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px}
+.carousel-dot{width:8px;height:8px;border-radius:50%;background:var(--c-border);cursor:pointer;transition:all .2s}
+.carousel-dot.active{background:var(--c-purple);width:24px;border-radius:4px}
+
+.promo-card-1{background:linear-gradient(135deg,var(--c-navy) 0%,var(--c-deep-purple) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.promo-card-2{background:linear-gradient(135deg,var(--c-purple) 0%,var(--c-navy) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.promo-card-3{background:linear-gradient(135deg,#11151c 0%,var(--c-navy) 100%);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:24px;color:#fff}
+
+.section-hd{display:flex;align-items:center;justify-content:space-between;padding:24px 24px 16px}
+.section-hd-title{font-size:20px;font-weight:700;color:var(--c-text)}
+.section-hd-link{font-size:13px;font-weight:600;color:var(--c-purple);cursor:pointer}
+
+.brands-scroll{display:flex;gap:24px;overflow-x:auto;padding:0 24px 24px;scrollbar-width:none}
+.brands-scroll::-webkit-scrollbar{display:none}
+.brand-chip{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0;cursor:pointer;width:72px}
+.brand-ico{width:72px;height:72px;border-radius:50%;background:var(--c-surface);border:1px solid var(--c-border);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.brand-chip:hover .brand-ico{border-color:var(--c-purple);box-shadow:0 0 0 2px rgba(136,46,202,.2);transform:translateY(-2px)}
+.brand-ico img{width:40px;height:40px;object-fit:contain}
+.brand-ico-emoji{font-size:32px}
+.brand-discount{font-size:11px;font-weight:700;color:var(--c-text-muted);text-align:center;text-transform:uppercase;letter-spacing:0.05em}
+.brand-chip:hover .brand-discount{color:var(--c-text)}
+
+.groups-list{padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:24px}
+.group-card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color .2s,background .2s}
+.group-card:hover{border-color:var(--c-navy);background:var(--c-surface-hover)}
+.group-logo-wrap{width:56px;height:56px;border-radius:12px;background:var(--c-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px;border:1px solid var(--c-border)}
+.group-info{flex:1;min-width:0}
+.group-name{font-size:15px;font-weight:700;color:var(--c-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group-plan{font-size:12px;color:var(--c-text-muted);margin:4px 0 8px}
+.group-slots-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.slot-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.slot-open{background:var(--c-mint)}
+.slot-taken{background:var(--c-border)}
+.slot-label{font-size:11px;color:var(--c-text-muted)}
+.escrow-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(97,210,154,.1);color:var(--c-mint);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:auto;border:1px solid rgba(97,210,154,.2)}
+.ott-warn-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);color:var(--c-warning);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:auto;border:1px solid rgba(245,158,11,.2)}
+.group-price-col{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end}
+.group-price{font-size:18px;font-weight:800;color:var(--c-purple)}
+.group-price-unit{font-size:12px;font-weight:400;color:var(--c-text-muted)}
+.group-orig{font-size:12px;color:#6b7280;text-decoration:line-through;margin-top:2px}
+.save-badge{display:inline-block;background:rgba(136,46,202,.15);color:#d8b4fe;border:1px solid rgba(136,46,202,.3);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:6px}
+
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:var(--c-surface);border-top:1px solid var(--c-border);display:none;align-items:center;z-index:50}
+@media(max-width:767px){.bottom-nav{display:flex}}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;cursor:pointer;border:none;background:none;position:relative}
+.nav-icon{font-size:20px;transition:transform .15s}
+.nav-label{font-size:10px;font-weight:600;color:var(--c-text-muted);transition:color .15s}
+.nav-btn.active .nav-label{color:var(--c-purple)}
+.nav-btn.active .nav-icon{transform:scale(1.1)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--c-surface);border:1px solid var(--c-border);border-radius:24px;padding:32px;width:100%;max-width:440px;position:relative;box-shadow:0 24px 48px rgba(0,0,0,.5)}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;background:var(--c-bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--c-text-muted);border:1px solid var(--c-border);transition:all .2s}
+.modal-close:hover{background:var(--c-border);color:var(--c-text)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--c-navy);border:1px solid var(--c-deep-purple);color:#fff;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:300;opacity:0;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════ WALLET PAGE STYLES ═══════════ */
+.wallet-container {display: grid; grid-template-columns: 1fr; gap: 24px; padding: 24px;}
+@media(min-width: 768px) {
+  .wallet-container {grid-template-columns: 360px 1fr; padding: 32px 24px;}
+}
+.wallet-hero{background:linear-gradient(135deg,var(--c-deep-purple) 0%,var(--c-navy) 100%);padding:32px 24px;border-radius: 16px;color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--c-border)}
+.wallet-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05)}
+.wallet-label{font-size:13px;opacity:.7;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:600}
+.wallet-balance{font-size:48px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px}
+.wallet-sub{font-size:13px;opacity:.7;}
+.wallet-actions{display:flex;gap:12px;margin-top:32px}
+.wallet-action{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:background .2s, transform .1s}
+.wallet-action:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+.wallet-action-icon{font-size:20px}
+.wallet-upi-btn{width:100%;background:var(--c-purple);color:#fff;border-radius:12px;padding:16px;font-size:15px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;box-shadow:0 4px 16px rgba(136,46,202,.2)}
+.wallet-upi-btn:hover{background:#701eb5;box-shadow:0 6px 20px rgba(136,46,202,.3)}
+.wallet-notice{background:rgba(136,46,202,0.05);border:1px solid rgba(136,46,202,0.2);border-radius:12px;padding:16px}
+.wallet-notice-title{font-size:14px;font-weight:700;color:#d8b4fe;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.wallet-notice-text{font-size:13px;color:var(--c-text-muted);line-height:1.6}
+.wallet-notice-text strong {color: var(--c-text)}
+.fee-disclosure{background:rgba(97,210,154,0.05);border:1px solid rgba(97,210,154,0.2);border-radius:12px;padding:16px}
+.fee-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 0}
+.fee-label{color:var(--c-text-muted)}
+.fee-val{font-weight:600;color:var(--c-text)}
+.fee-val.green{color:var(--c-mint)}
+.fee-val.saving{color:var(--c-purple);font-size:14px;font-weight:700}
+.fee-divider-line{height:1px;background:rgba(97,210,154,0.2);margin:8px 0}
+.txn-section{background:var(--c-surface);border:1px solid var(--c-border);border-radius:16px;padding:24px;display:flex;flex-direction:column}
+.txn-label{font-size:18px;font-weight:700;color:var(--c-text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.txn-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;color:#6b7280}
+.txn-empty-icon{font-size:48px;margin-bottom:16px;opacity:.2}
+.txn-empty-text{font-size:14px;line-height:1.5}
+
+/* ═══════════ STRATEGIC INTELLIGENCE REPORT OVERLAY ═══════════ */
+.report-overlay {position:fixed;inset:0;background:var(--c-bg);z-index:700;overflow-y:auto;display:none;color:var(--c-text);font-family:'Inter',sans-serif}
+.report-overlay.open {display:block}
+.report-header {position:sticky;top:0;z-index:10;background:rgba(9,10,15,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+.report-header-left {display:flex;flex-direction:column;gap:4px;}
+.report-eyebrow {font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:var(--c-purple)}
+.report-title {font-size:20px;font-weight:800;color:#fff}
+.report-close {width:36px;height:36px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-surface);color:var(--c-text-muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.report-close:hover {background:var(--c-navy);color:#fff}
+
+.report-container {max-width:1000px;margin:0 auto;padding:40px 32px;display:flex;flex-direction:column;gap:48px}
+
+.report-section-title {font-size:24px;font-weight:800;color:#fff;margin-bottom:24px;border-bottom:2px solid var(--c-border);padding-bottom:12px;display:flex;align-items:center;gap:12px}
+.report-section-title span {color:var(--c-purple)}
+
+/* Executive Verdict */
+.exec-verdict {background:linear-gradient(135deg,var(--c-surface) 0%,var(--c-navy) 100%);border:1px solid var(--c-deep-purple);border-radius:16px;padding:32px;}
+.exec-verdict h3 {font-size:14px;text-transform:uppercase;letter-spacing:0.1em;color:var(--c-purple);margin-bottom:16px;font-weight:800}
+.exec-verdict p {font-size:15px;line-height:1.7;color:var(--c-text);margin-bottom:16px}
+.exec-verdict p:last-child {margin-bottom:0}
+
+/* Data Tables */
+.data-table-wrap {border:1px solid var(--c-border);border-radius:12px;overflow:hidden;background:var(--c-surface)}
+.data-table {width:100%;border-collapse:collapse;text-align:left;font-size:13px}
+.data-table th {background:var(--c-bg);padding:16px;font-weight:700;color:var(--c-text-muted);text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--c-border)}
+.data-table td {padding:16px;border-bottom:1px solid var(--c-border);color:var(--c-text);vertical-align:top}
+.data-table tr:last-child td {border-bottom:none}
+.data-table tbody tr:hover {background:var(--c-bg)}
+
+.highlight-green {color:var(--c-mint);font-weight:600}
+.highlight-red {color:var(--c-danger);font-weight:600}
+.highlight-amber {color:var(--c-warning);font-weight:600}
+
+/* SWOT Grid */
+.swot-grid {display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.swot-grid{grid-template-columns:1fr}}
+.swot-box {background:var(--c-surface);border:1px solid var(--c-border);border-radius:12px;padding:24px}
+.swot-box-title {font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.swot-box ul {list-style:none;padding:0;margin:0}
+.swot-box li {position:relative;padding-left:16px;margin-bottom:12px;font-size:13px;line-height:1.5;color:var(--c-text-muted)}
+.swot-box li::before {content:'•';position:absolute;left:0;color:var(--c-purple);font-weight:bold}
+
+/* Feedbacks / Strategic Recs */
+.fb-card {background:var(--c-surface);border:1px solid var(--c-border);border-radius:16px;overflow:hidden;margin-bottom:20px;transition:border-color .2s}
+.fb-card-top {padding:24px;display:flex;align-items:flex-start;gap:20px;border-bottom:1px solid var(--c-border);background:rgba(255,255,255,0.02)}
+.fb-num {font-family:'DM Mono',monospace;font-size:32px;font-weight:900;color:var(--c-border);line-height:1}
+.fb-info {flex:1}
+.fb-card-title {font-size:18px;font-weight:800;color:#fff;margin-bottom:8px}
+.fb-tags {display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.fb-tag {font-size:10px;font-weight:800;padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+.fb-tag-priority {background:rgba(239,68,68,.1);color:var(--c-danger);border:1px solid rgba(239,68,68,.2)}
+.fb-tag-priority.p1 {background:rgba(245,158,11,.1);color:var(--c-warning);border:1px solid rgba(245,158,11,.2)}
+.fb-tag-priority.p2 {background:rgba(97,210,154,.1);color:var(--c-mint);border:1px solid rgba(97,210,154,.2)}
+.fb-tag-pillar {background:var(--c-bg);color:var(--c-text-muted);border:1px solid var(--c-border)}
+
+.fb-body {padding:24px;display:grid;gap:20px}
+.fb-section {}
+.fb-sec-label {font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--c-purple);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fb-sec-text {font-size:14px;color:var(--c-text);line-height:1.6}
+
+.demo-btn {display:inline-flex;align-items:center;gap:8px;background:var(--c-purple);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none}
+.demo-btn:hover {background:#701eb5;transform:translateY(-2px);box-shadow:0 4px 12px rgba(136,46,202,.3)}
+
+/* Diagram & Evidence Styles */
+.fb-diagram { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px; margin: 12px 0; overflow-x: auto; }
+.fb-diag-ascii { font-family: 'DM Mono', monospace; font-size: 11px; color: #a5b4fc; white-space: pre; line-height: 1.4; }
+.fb-step-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.fb-step-item { background: rgba(255,255,255,0.03); border-left: 2px solid var(--c-mint); padding: 10px 14px; border-radius: 4px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+.fb-step-item strong { color: #f3f4f6; font-size: 13px; display: block; margin-bottom: 4px; }
+.evidence-box { background: rgba(136, 46, 202, 0.05); border: 1px dashed rgba(136, 46, 202, 0.3); border-radius: 8px; padding: 12px; margin-top: 4px; font-size: 11px; color: #d1d5db; line-height: 1.6; }
+.evidence-box strong { color: #d8b4fe; }
+
+/* ═══ FAB ANALYSIS BUTTON ═══ */
+.fab-analysis{position:fixed;bottom:86px;right:24px;z-index:400;background:linear-gradient(135deg,var(--c-purple) 0%,var(--c-deep-purple) 100%);color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.6);display:flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s;white-space:nowrap}
+@media(min-width:768px){.fab-analysis{bottom:24px;}}
+.fab-analysis:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(136,46,202,.4)}
+.fab-pulse{width:8px;height:8px;border-radius:50%;background:#d8b4fe;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* Group Modal Fixes for Dark Mode */
+.gd-header {display: flex; gap: 16px; margin-bottom: 20px;}
+.gd-logo {width: 64px; height: 64px; border-radius: 16px; background: var(--c-bg); border:1px solid var(--c-border); display: flex; align-items: center; justify-content: center; font-size: 32px;}
+.gd-name {font-size: 20px; font-weight: 700; color: #fff;}
+.gd-plan {font-size: 13px; color: var(--c-text-muted); margin-top: 2px;}
+.gd-row {display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--c-border);}
+.gd-row:last-of-type {border-bottom: none;}
+.gd-label {color: var(--c-text-muted); font-size: 13px;}
+.gd-value {color: #fff; font-size: 14px; font-weight: 600;}
+.join-btn {width: 100%; padding: 16px; border-radius: 12px; background: var(--c-purple); color: #fff; font-weight: 700; font-size: 16px; border: none; cursor: pointer; margin-top: 24px; transition: background .2s;}
+.join-btn:hover {background: #701eb5;}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════ STRATEGIC INTELLIGENCE REPORT OVERLAY ═══════════ -->
+<div class="report-overlay" id="analysisOverlay">
+  <div class="report-header">
+    <div class="report-header-left">
+      <div class="report-eyebrow">Product Intern Assignment · VocalLabs / Subspace 2026</div>
+      <div class="report-title">Strategic Intelligence Report</div>
+    </div>
+    <button class="report-close" onclick="closeAnalysis()">✕</button>
+  </div>
+  
+  <div class="report-container">
+    
+    <!-- Exec Verdict -->
+    <div class="exec-verdict">
+      <h3>Executive Verdict</h3>
+      <p>Subspace operates in a highly lucrative space, achieving a bootstrapped ARR of <b>₹36.5 Cr</b> with a team of only three and an impressive <b>90%+ AI-automated</b> operational engine. Subspace has one of India's most defensible fintech business models with a proprietary automation layer (Negotiate API) and genuine network effects baked into group sharing.</p>
+      <p>However, while the backend remains highly efficient, there is a clear bottleneck at the user-facing product surface. The problem is not the backend. The problem is the product surface.</p>
+      <p>This teardown analyzes five structural friction points observed in the live app, ranging from front-end trust gaps to payment infrastructure limits and competitive threats. Rather than offering generic UX suggestions, this report presents structurally sound, developer-ready, and financially viable product solutions.</p>
+    </div>
+
+    <!-- Section 1: Competitive Landscape -->
+    <div>
+      <div class="report-section-title"><span>1.</span> Competitive Landscape</div>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px; margin-bottom:32px;">
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th colspan="2">Market Context</th></tr></thead>
+            <tbody>
+              <tr><td>India OTT Market (2026 est.)</td><td style="font-weight:700">₹41,000 Cr</td></tr>
+              <tr><td>Digital Subscription Users</td><td style="font-weight:700">200M+</td></tr>
+              <tr><td>YoY Subscription Growth</td><td class="highlight-green">28%</td></tr>
+              <tr><td>Subspace ARR vs. Nearest Rival</td><td class="highlight-green">8× higher</td></tr>
+              <tr><td>Netflix Extra Member (Threat Price)</td><td class="highlight-amber">₹149/mo</td></tr>
+              <tr><td>MoneyClub Funding (Mar 2025)</td><td>$6.88M</td></tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Company</th><th>ARR / Funding</th><th>Core Moat</th><th>Key Risk</th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight:700">Subspace</td><td>₹36.5 Cr (Bootstrapped)</td><td>Negotiate API</td><td class="highlight-red">Admin trust, UX</td></tr>
+              <tr><td style="font-weight:700">myPaisaa</td><td>₹5.31 Cr (Acq. $7.5M)</td><td>User base</td><td>Integration</td></tr>
+              <tr><td style="font-weight:700">MoneyClub</td><td>₹4.55 Cr ($6.88M)</td><td>Funded growth</td><td>Capital dep.</td></tr>
+              <tr><td style="font-weight:700">Finlok</td><td>N/A</td><td>Niche focus</td><td>Scale/distrib.</td></tr>
+              <tr><td style="font-weight:700">PhonePe / Paytm</td><td>Massive (Funded)</td><td>Distribution</td><td>Not niche focused</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="data-table-wrap" style="margin-bottom:32px;">
+        <table class="data-table">
+          <thead><tr><th>Porter's Five Forces</th><th>Rating</th><th>Strategic Insight</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700">Rivalry</td><td class="highlight-amber">MEDIUM</td><td>Subspace holds 8× higher ARR than nearest rival. Indirect threat: Netflix/YouTube native family plans. No competitor simultaneously has Negotiate API + group-sharing.</td></tr>
+            <tr><td style="font-weight:700">Buyer Power</td><td class="highlight-amber">MED-HIGH</td><td>Fickle for gift cards, but for shared subscriptions, switching cost is higher. Stickiness scales with group size, not time on platform.</td></tr>
+            <tr><td style="font-weight:700">Supplier Power</td><td class="highlight-amber">MED-HIGH</td><td>Critical dependency on OTT platforms allowing credential sharing. Netflix's password-sharing crackdown is an active precedent.</td></tr>
+            <tr><td style="font-weight:700">Threat of Entry</td><td class="highlight-green">LOW-MED</td><td>Deep operational complexity creates barriers. But PhonePe/Paytm can launch gift cards with zero marginal CAC using existing networks.</td></tr>
+            <tr><td style="font-weight:700">Substitutes</td><td class="highlight-amber">MEDIUM</td><td>Gift cards (CashKaro), Subs (OTT family plans). No single platform covers all three verticals simultaneously. The bundled proposition is the moat.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Product Metric / Feature</th><th>Subspace.money</th><th>myPaisaa</th><th>MoneyClub</th><th>Spliiit (Global Benchmark)</th></tr></thead>
+          <tbody>
+            <tr><td>P2P Subscription Splitting</td><td class="highlight-green">Yes (Market Leader)</td><td>No</td><td>No</td><td>Yes (Europe leader)</td></tr>
+            <tr><td>Negotiate API (Discount Engine)</td><td class="highlight-green">Yes (Proprietary)</td><td>No</td><td>No</td><td>No</td></tr>
+            <tr><td>Buyer Escrow / Protection</td><td class="highlight-red">No (Critical Gap)</td><td>Yes (Chit-fund)</td><td>Yes</td><td>Yes (ACPR regulated)</td></tr>
+            <tr><td>Cross-Platform Portability</td><td class="highlight-red">No (Android only)</td><td>Yes</td><td>Yes</td><td>Yes (Web, iOS, Android)</td></tr>
+            <tr><td>B2B Employee Perks Portal</td><td class="highlight-amber">No (Opportunity)</td><td>No</td><td>No</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 2: SWOT Analysis -->
+    <div>
+      <div class="report-section-title"><span>2.</span> Platform SWOT Analysis</div>
+      <div class="swot-grid">
+        <div class="swot-box" style="border-top:4px solid var(--c-mint)">
+          <div class="swot-box-title">Strengths</div>
+          <ul>
+            <li>Efficient ₹36.5 Cr ARR model (Bootstrapped)</li>
+            <li>Automated Negotiate API (Proprietary moat)</li>
+            <li>Low overhead via AI ops (90% automated)</li>
+            <li>Network effects baked into group-sharing</li>
+            <li>India-first vernacular/regional OTT positioning</li>
+          </ul>
+        </div>
+        <div class="swot-box" style="border-top:4px solid var(--c-danger)">
+          <div class="swot-box-title">Weaknesses</div>
+          <ul>
+            <li>Admin-dependency creates chronic trust failures</li>
+            <li>High transaction/wallet fees & pre-commitment friction</li>
+            <li>Closed viral loop (friction-heavy sharing)</li>
+            <li>Play Store rating 3.5/5 due to unaddressed bugs</li>
+            <li>Negotiate API moat is invisible to users</li>
+          </ul>
+        </div>
+        <div class="swot-box" style="border-top:4px solid var(--c-purple)">
+          <div class="swot-box-title">Opportunities</div>
+          <ul>
+            <li>Legal multi-seat alternatives (B2B bundles)</li>
+            <li>Regional merchant SaaS tiers (Local Subscriptions)</li>
+            <li>UPI AutoPay automation (Pass-through billing)</li>
+            <li>Subspace for Teams (B2B Corporate perks)</li>
+            <li>Subscription expense audit as hero onboarding</li>
+          </ul>
+        </div>
+        <div class="swot-box" style="border-top:4px solid var(--c-warning)">
+          <div class="swot-box-title">Threats</div>
+          <ul>
+            <li>Household-blocking policies (Netflix/Disney+)</li>
+            <li>Funded competition entering space (MoneyClub)</li>
+            <li>PhonePe/GPay launching zero-CAC gift cards</li>
+            <li>Wallet/storage regulations from RBI tightening</li>
+            <li>Trust review compounding (App Store drop)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Strategic Recommendations -->
+    <div>
+      <div class="report-section-title"><span>3.</span> Strategic Recommendations</div>
+      <div id="feedbacksContainer"></div>
+    </div>
+    
+    <!-- Section 4: Prioritization -->
+    <div>
+      <div class="report-section-title"><span>4.</span> Implementation Roadmap</div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Priority</th><th>Intervention Focus</th><th>Targeted Pillar</th><th>Success Metric</th><th>Dependencies</th></tr></thead>
+          <tbody>
+            <tr><td class="highlight-red">P0</td><td style="font-weight:700">Telemetry Escrow Architecture</td><td>Features / Services</td><td>Churn Rate & Rating</td><td>In-App OTP Gateway</td></tr>
+            <tr><td class="highlight-red">P0</td><td style="font-weight:700">Local Provider Marketplace</td><td>GTM & ICPs</td><td>Merchant SaaS Revenue</td><td>Self-Serve Form</td></tr>
+            <tr><td class="highlight-red">P0</td><td style="font-weight:700">OTT Policy Alignment</td><td>Competitor Analysis</td><td>ARR Protection</td><td>Bulk License APIs</td></tr>
+            <tr><td class="highlight-amber">P1</td><td style="font-weight:700">Wallet Fee Restructuring</td><td>UX</td><td>Checkout Velocity</td><td>NPCI UPI AutoPay</td></tr>
+            <tr><td class="highlight-mint">P2</td><td style="font-weight:700">Subspace for Teams B2B</td><td>Collaborations</td><td>B2B User Inflow</td><td>HR-Tech Partners</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="gdModal">
+  <div class="modal-box" id="gdSheet"></div>
+</div>
+
+<div class="site-shell">
+<div class="app-column" id="appCol">
+
+  <!-- Desktop Header -->
+  <header class="desktop-header">
+    <div class="header-logo-group">
+      <div class="header-logo-text">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 16L12 20L20 16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12L12 16L20 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 8L12 12L20 8L12 4L4 8Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        subspace
+      </div>
+      <div class="header-delivery-info">
+        <span>Delivery in minutes</span>
+        <div class="delivery-title">F989+36Q, Hanuman Nagar, Shilpa Hills... ▾</div>
+      </div>
+    </div>
+    
+    <nav class="desktop-nav">
+      <div class="nav-link active" onclick="switchTab('home')">Home</div>
+      <div class="nav-link" onclick="switchTab('explore')">Explore</div>
+      <div class="nav-link" onclick="switchTab('local')">Local <span style="background:var(--c-mint);color:var(--c-bg);padding:2px 6px;border-radius:4px;font-size:9px;font-weight:800;margin-left:4px;">NEW</span></div>
+      <div class="nav-link" onclick="switchTab('teams')">Teams <span style="background:var(--c-purple);color:#fff;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:800;margin-left:4px;">B2B</span></div>
+      <div class="nav-link" onclick="switchTab('wallet')">Wallet</div>
+      <div class="nav-link" onclick="showToast('Chat is currently empty.')">Chat</div>
+      <div class="nav-link" onclick="showToast('Cart is currently empty.')">Cart</div>
+    </nav>
+
+    <div class="header-actions">
+      <div class="search-wrapper">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Quick search" oninput="handleSearch(this.value)"/>
+      </div>
+      <div class="lang-selector">EN ▾</div>
+      <div class="user-avatar-btn" onclick="showToast('User profile settings')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Discount Ticker -->
+  <div class="ticker-bar">
+    <div class="ticker-content">
+      <div class="ticker-item">Amazon Prime <span class="highlight">15% OFF</span> - ₹424 for 1 years</div><div class="ticker-divider"></div>
+      <div class="ticker-item">Gaana Plus <span class="highlight">13% OFF</span> - ₹87 for 1 months</div><div class="ticker-divider"></div>
+      <div class="ticker-item">ShemarooMe <span class="highlight">3% OFF</span> - ₹125 for 1 months</div><div class="ticker-divider"></div>
+      <div class="ticker-item">Subspace <span class="highlight">60% OFF</span> - ₹199 for 1 months</div><div class="ticker-divider"></div>
+      <div class="ticker-item">Playstore Gift Card <span class="highlight">3% OFF</span> - ₹97 for ₹100</div><div class="ticker-divider"></div>
+      <div class="ticker-item">Sony Liv <span class="highlight">48% OFF</span> - ₹156 for 1 months</div><div class="ticker-divider"></div>
+      <!-- Duplicate for seamless looping -->
+      <div class="ticker-item">Amazon Prime <span class="highlight">15% OFF</span> - ₹424 for 1 years</div><div class="ticker-divider"></div>
+      <div class="ticker-item">Gaana Plus <span class="highlight">13% OFF</span> - ₹87 for 1 months</div><div class="ticker-divider"></div>
+      <div class="ticker-item">ShemarooMe <span class="highlight">3% OFF</span> - ₹125 for 1 months</div><div class="ticker-divider"></div>
+      <div class="ticker-item">Subspace <span class="highlight">60% OFF</span> - ₹199 for 1 months</div><div class="ticker-divider"></div>
+    </div>
+  </div>
+
+  <div class="page active" id="page-home">
+    
+    <!-- Hero Carousel -->
+    <div class="hero-carousel-section">
+      <div class="carousel-arrow arrow-left" onclick="scrollCarousel(-1)">‹</div>
+      <div class="carousel-viewport" id="carouselViewport">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide promo-card-1" onclick="showToast('Opening Subspace delivery details...')">
+            <h2 style="font-weight:800;font-size:28px;margin-bottom:8px">Minutes</h2>
+            <p style="font-size:13px;opacity:0.8">Time should never slow you down.</p>
+          </div>
+          <div class="carousel-slide promo-card-2" onclick="openGroupModal('zee5')">
+            <div style="width:80px;height:80px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow: 0 0 0 4px rgba(255,255,255,0.2), 0 0 0 8px rgba(255,255,255,0.1)">
+              <span style="color:var(--c-navy);font-weight:800;font-size:24px">ZEE5</span>
+            </div>
+            <div style="border:1px solid rgba(255,255,255,0.3);padding:6px 16px;border-radius:999px;font-weight:700;letter-spacing:1px">50.00% OFF</div>
+          </div>
+          <div class="carousel-slide promo-card-3" onclick="showToast('Opening Playstore Gift Cards...')">
+            <h2 style="font-weight:800;font-size:24px;line-height:1.2;margin-bottom:12px">PLAYSTORE<br/>GIFT CARDS</h2>
+            <div style="font-size:36px;font-weight:900;color:var(--c-warning);text-shadow: 2px 2px 0px #000">3% <span style="font-size:24px">OFF</span></div>
+          </div>
+          <!-- Duplicates for scrolling effect -->
+           <div class="carousel-slide promo-card-1" onclick="showToast('Opening Subspace delivery details...')">
+            <h2 style="font-weight:800;font-size:28px;margin-bottom:8px">Minutes</h2>
+            <p style="font-size:13px;opacity:0.8">Time should never slow you down.</p>
+          </div>
+          <div class="carousel-slide promo-card-2" onclick="openGroupModal('zee5')">
+            <div style="width:80px;height:80px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow: 0 0 0 4px rgba(255,255,255,0.2), 0 0 0 8px rgba(255,255,255,0.1)">
+              <span style="color:var(--c-navy);font-weight:800;font-size:24px">ZEE5</span>
+            </div>
+            <div style="border:1px solid rgba(255,255,255,0.3);padding:6px 16px;border-radius:999px;font-weight:700;letter-spacing:1px">50.00% OFF</div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-arrow arrow-right" onclick="scrollCarousel(1)">›</div>
+    </div>
+    <div class="carousel-dots">
+      <div class="carousel-dot"></div>
+      <div class="carousel-dot active"></div>
+      <div class="carousel-dot"></div>
+      <div class="carousel-dot"></div>
+      <div class="carousel-dot"></div>
+      <div class="carousel-dot"></div>
+    </div>
+
+    <!-- Favourite Brands (Circular Dark Theme) -->
+    <div class="section-hd" style="margin-top:24px"><div class="section-hd-title">Favourite Brands</div></div>
+    <div class="brands-scroll">
+      <div class="brand-chip" onclick="showToast('Opening Swiggy offers...')">
+        <div class="brand-ico" style="background:var(--c-navy)"><span style="color:#f97316;font-size:36px;font-weight:900">S</span></div>
+        <div class="brand-discount">3% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="showToast('Opening Sony Liv offers...')">
+        <div class="brand-ico"><span style="color:var(--c-purple);font-size:16px;font-weight:900;text-align:center;line-height:1.2">SONY<br/>liv</span></div>
+        <div class="brand-discount">48% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="showToast('Opening Zomato offers...')">
+        <div class="brand-ico" style="background:var(--c-danger)"><span style="color:#fff;font-size:16px;font-weight:900">zomato</span></div>
+        <div class="brand-discount">6% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="openGroupModal('zee5')">
+        <div class="brand-ico"><span style="color:#fff;font-size:18px;font-weight:900">ZEE5</span></div>
+        <div class="brand-discount">50% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="showToast('Opening Decathlon offers...')">
+        <div class="brand-ico" style="background:#0284c7"><span style="color:#fff;font-size:12px;font-weight:900">DECATHLON</span></div>
+        <div class="brand-discount">4% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="showToast('Opening Myntra offers...')">
+        <div class="brand-ico"><span style="color:#ec4899;font-size:28px;font-weight:900">M</span></div>
+        <div class="brand-discount">4.5% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="showToast('Opening Pizza Hut offers...')">
+        <div class="brand-ico" style="background:var(--c-danger)"><span style="color:#fff;font-size:14px;font-weight:900;text-align:center">Pizza<br/>Hut</span></div>
+        <div class="brand-discount">8% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="showToast('Opening Domino\'s offers...')">
+        <div class="brand-ico" style="background:#2563eb"><span style="color:#fff;font-size:12px;font-weight:900;text-align:center">Domino's</span></div>
+        <div class="brand-discount">10.5% OFF</div>
+      </div>
+      <div class="brand-chip" onclick="openGroupModal('netflix-p')">
+        <div class="brand-ico"><span style="color:var(--c-danger);font-size:32px;font-weight:900">N</span></div>
+        <div class="brand-discount">5.5% OFF</div>
+      </div>
+    </div>
+
+    <!-- Shared Subscriptions Grid -->
+    <div class="section-hd"><div class="section-hd-title">Shared Subscriptions</div><div class="section-hd-link" onclick="switchTab('explore')">View All</div></div>
+    <div class="groups-list" id="groupsList"></div>
+
+  </div>
+
+  <!-- OTHER PAGES -->
+  <div class="page" id="page-explore">
+    <div class="section-hd"><div class="section-hd-title">Explore Subscriptions</div></div>
+    <div class="groups-list" id="exploreList"></div>
+  </div>
+  
+  <!-- LOCAL MARKETPLACE IMPLEMENTATION -->
+  <div class="page" id="page-local">
+    <div class="section-hd"><div class="section-hd-title">📍 Local Subscriptions (Beta)</div></div>
+    <div style="padding:0 32px 16px; color:var(--c-text-muted); font-size: 14px; line-height: 1.6;">
+      India's first marketplace for local providers — gyms, tutors, creators, co-working. Currently live for <b>Bengaluru</b> users.
+    </div>
+    
+    <div class="groups-list">
+      <!-- Local Provider Cards -->
+      <div class="group-card" onclick="showToast('Opening Yoga with Priya...')">
+        <div class="group-logo-wrap" style="background:#F0FDF4; border-color:#A7F3D0;">🧘</div>
+        <div class="group-info">
+          <div class="group-name">Yoga with Priya</div>
+          <div class="group-plan">Live classes · Wellness</div>
+          <div class="group-slots-row"><span class="slot-label">📍 Koramangala, Bengaluru</span></div>
+        </div>
+        <div class="group-price-col">
+          <div class="group-price">₹299<span class="group-price-unit">/mo</span></div>
+          <div class="save-badge" style="background:var(--c-mint);color:var(--c-bg)">Live</div>
+        </div>
+      </div>
+      
+      <div class="group-card" onclick="showToast('Opening Telugu with Ravi...')">
+        <div class="group-logo-wrap" style="background:#EFF6FF; border-color:#BFDBFE;">📚</div>
+        <div class="group-info">
+          <div class="group-name">Telugu with Ravi</div>
+          <div class="group-plan">Online tutoring · Language</div>
+          <div class="group-slots-row"><span class="slot-label">📍 Online · Bengaluru based</span></div>
+        </div>
+        <div class="group-price-col">
+          <div class="group-price">₹199<span class="group-price-unit">/mo</span></div>
+          <div class="save-badge" style="background:var(--c-mint);color:var(--c-bg)">Live</div>
+        </div>
+      </div>
+      
+      <div class="group-card" onclick="showToast('Opening Indiranagar Co-work...')">
+        <div class="group-logo-wrap" style="background:#FFFBEB; border-color:#FDE68A;">☕</div>
+        <div class="group-info">
+          <div class="group-name">Indiranagar Co-work</div>
+          <div class="group-plan">Hot-desking · Workspace</div>
+          <div class="group-slots-row"><span class="slot-label">📍 Indiranagar, Bengaluru</span></div>
+        </div>
+        <div class="group-price-col">
+          <div class="group-price">₹999<span class="group-price-unit">/mo</span></div>
+          <div class="save-badge" style="background:#f59e0b;color:#fff">Beta</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section-hd" style="margin-top: 16px;"><div class="section-hd-title">List Your Business</div></div>
+    <div style="padding: 0 32px;">
+      <div style="background:var(--c-navy); border:1px dashed var(--c-purple); border-radius:16px; padding:24px; text-align:center;">
+        <div style="font-size:16px; font-weight:700; color:#fff; margin-bottom:8px;">Are you a local provider?</div>
+        <div style="font-size:13px; color:var(--c-text-muted); margin-bottom:16px; line-height: 1.5;">Set up your subscription plan, collect UPI payments, and grow your audience with zero setup fees.</div>
+        <button style="background:var(--c-purple); color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='#9d3beb'" onmouseout="this.style.background='var(--c-purple)'" onclick="showToast('Opening provider registration form...')">Start 90-Day Free Trial</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAMS / B2B PAGE -->
+  <div class="page" id="page-teams">
+    <div class="section-hd"><div class="section-hd-title">💼 Subspace for Teams</div></div>
+    
+    <div style="padding: 0 32px 24px; color:var(--c-text-muted); font-size: 14px; line-height: 1.6; margin-bottom:16px;">
+      Tax-free flexi-benefits for modern companies. Distribute wallet credits seamlessly to your employees.
+    </div>
+    
+    <div style="padding: 0 32px 24px;">
+      <!-- Employee View Mockup -->
+      <div style="background:linear-gradient(135deg, var(--c-navy) 0%, var(--c-deep-purple) 100%); border:1px solid var(--c-purple); border-radius:16px; padding:32px; color:#fff; position:relative; overflow:hidden; margin-bottom:32px; box-shadow:0 8px 32px rgba(136,46,202,0.2);">
+        <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--c-mint); margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-block;width:8px;height:8px;background:var(--c-mint);border-radius:50%;box-shadow:0 0 8px var(--c-mint)"></span> Active Corporate Perk
+        </div>
+        <div style="font-size:28px; font-weight:800; margin-bottom:4px;">Freshworks Inc.</div>
+        <div style="font-size:14px; color:var(--c-text-muted); margin-bottom:24px;">Monthly Flexi-Benefits Allowance</div>
+        
+        <div style="font-size:48px; font-weight:800; color:var(--c-mint); margin-bottom:8px; letter-spacing:-0.03em;">₹2,500<span style="font-size:16px; font-weight:600; color:var(--c-text-muted);"> / mo</span></div>
+        
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button style="flex:1; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); padding:12px; border-radius:12px; color:#fff; font-weight:700; font-size:14px; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" onclick="showToast('Paying for Netflix via Corporate Credits')">Split Subscriptions</button>
+          <button style="flex:1; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); padding:12px; border-radius:12px; color:#fff; font-weight:700; font-size:14px; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" onclick="showToast('Buying Swiggy Vouchers via Corporate Credits')">Food Vouchers</button>
+        </div>
+      </div>
+
+      <!-- HR Dashboard Preview Banner -->
+      <div style="background:var(--c-surface); border:1px solid var(--c-border); border-radius:16px; padding:32px;">
+        <div style="font-size:18px; font-weight:700; color:var(--c-text); margin-bottom:12px;">Are you an HR Admin?</div>
+        <div style="font-size:14px; color:var(--c-text-muted); line-height:1.6; margin-bottom:24px;">Distribute tax-free flexi-benefits to your employees. Buy Subspace credits in bulk with zero CAC and receive standard GST invoicing.</div>
+        <div style="display:flex; align-items:center; gap:20px;">
+           <button style="background:var(--c-text); color:var(--c-bg); border:none; padding:12px 24px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" onclick="showToast('Opening HR B2B Dashboard Portal...')">Open HR Dashboard</button>
+           <span style="font-size:14px; color:var(--c-purple); font-weight:700; cursor:pointer;" onclick="showToast('Booking a demo with Sales...')">Book a Demo →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="page" id="page-wallet">
+    <div class="wallet-container">
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div class="wallet-hero">
+          <div>
+            <div class="wallet-label">Subspace Wallet</div>
+            <div class="wallet-balance">₹0.00</div>
+            <div class="wallet-sub">Available Balance · For gift cards only</div>
+          </div>
+          <div class="wallet-actions">
+            <button class="wallet-action" onclick="showToast('💡 Wallet for gift cards only. Use UPI direct for subscriptions!')"><div class="wallet-action-icon">＋</div>Add Money</button>
+            <button class="wallet-action" onclick="showToast('Instant UPI withdrawal — within 24 hrs')"><div class="wallet-action-icon">↑</div>Withdraw</button>
+            <button class="wallet-action" onclick="showToast('📋 Share link copied!')"><div class="wallet-action-icon">⤴</div>Share</button>
+          </div>
+        </div>
+        
+        <button class="wallet-upi-btn" onclick="showToast('🔗 Setting up UPI mandate for your active groups...')">
+          <span style="font-size:20px">📱</span> Pay via UPI — No wallet needed
+        </button>
+
+        <div class="wallet-notice">
+          <div class="wallet-notice-title">💡 How payment works now</div>
+          <div class="wallet-notice-text">
+            <strong>Subscription groups:</strong> Pay directly via UPI mandate — no pre-funding required. Fee shown transparently before every payment.<br/><br/>
+            <strong>Gift cards:</strong> Wallet still used here. Loading fee: 2% (reduced). Withdrawals: instant to UPI within 24 hrs.
+          </div>
+        </div>
+
+        <div class="fee-disclosure">
+          <div style="font-size:14px;font-weight:700;color:var(--c-mint);margin-bottom:12px">💰 Example: Netflix Premium split</div>
+          <div class="fee-row"><span class="fee-label">Your share of Netflix Premium</span><span class="fee-val">₹199/mo</span></div>
+          <div class="fee-row"><span class="fee-label">Platform fee (7.5%)</span><span class="fee-val green">₹15</span></div>
+          <div class="fee-divider-line"></div>
+          <div class="fee-row"><span class="fee-label" style="font-weight:700;color:var(--c-text)">Total via UPI</span><span class="fee-val" style="font-weight:700">₹214/mo</span></div>
+          <div class="fee-row"><span class="fee-label">vs individual Netflix plan</span><span class="fee-val saving">You save ₹435/mo 🎉</span></div>
+        </div>
+      </div>
+      
+      <div class="txn-section">
+        <div class="txn-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Recent Transactions
+        </div>
+        <div class="txn-empty">
+          <div style="width:24px;height:2px;background:var(--c-border);margin:0 auto 16px;"></div>
+          <div class="txn-empty-text">No more transactions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Mobile Bottom Nav (Fallback) -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" id="nav-home" onclick="switchTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+  <button class="nav-btn" id="nav-explore" onclick="switchTab('explore')"><span class="nav-icon">🔍</span><span class="nav-label">Explore</span></button>
+  <button class="nav-btn" id="nav-wallet" onclick="switchTab('wallet')"><span class="nav-icon">💳</span><span class="nav-label">Wallet</span></button>
+</nav>
+
+<!-- ANALYSIS FAB -->
+<button class="fab-analysis" id="fabAnalysis" onclick="openAnalysis()">
+  <span class="fab-pulse"></span>
+  📊 Strategic Report
+</button>
+
+<script>
+// ══ DATA ══
+const GROUPS = [
+  {id:'spotify',icon:'🎵',name:'Spotify Family',plan:'Official 6-member plan · Ad-free',slots:6,taken:4,price:59,orig:119,cat:'music',admin:'Amit S.',adminScore:{uptime:99,renewals:98,response:95},escrow:true,compliant:true,ottRisk:false},
+  {id:'youtube',icon:'📹',name:'YouTube Premium Family',plan:'Official 5-member · Ad-free',slots:5,taken:2,price:89,orig:189,cat:'ott',admin:'Divya M.',adminScore:{uptime:97,renewals:96,response:92},escrow:true,compliant:true,ottRisk:false},
+  {id:'office',icon:'💼',name:'Microsoft 365 Family',plan:'Official 6-user · 1TB OneDrive each',slots:6,taken:3,price:149,orig:489,cat:'productivity',admin:'Karan T.',adminScore:{uptime:99,renewals:99,response:97},escrow:true,compliant:true,ottRisk:false},
+  {id:'nordvpn',icon:'🔒',name:'NordVPN',plan:'2-year · 6 devices',slots:6,taken:4,price:99,orig:380,cat:'security',admin:'Ananya B.',adminScore:{uptime:98,renewals:97,response:94},escrow:true,compliant:true,ottRisk:false},
+  {id:'netflix-p',icon:'🎬',name:'Netflix Premium',plan:'4K Ultra HD · 4 screens',slots:4,taken:2,price:199,orig:649,cat:'ott',admin:'Rahul M.',adminScore:{uptime:88,renewals:85,response:78},escrow:true,compliant:false,ottRisk:true},
+  {id:'prime',icon:'📺',name:'Amazon Prime Video',plan:'Video + Shopping',slots:3,taken:1,price:99,orig:299,cat:'ott',admin:'Sneha R.',adminScore:{uptime:91,renewals:89,response:84},escrow:true,compliant:false,ottRisk:true},
+  {id:'zee5',icon:'🎭',name:'ZEE5 Premium',plan:'All content · HD',slots:4,taken:2,price:79,orig:365,cat:'ott',admin:'Mohan C.',adminScore:{uptime:84,renewals:82,response:76},escrow:true,compliant:false,ottRisk:true},
+];
+
+function pct(g){return Math.round((1-g.price/g.orig)*100)}
+function feeAfterPlatform(price){return Math.round(price*1.075)}
+
+function groupCardHTML(g){
+  const avail=g.slots-g.taken;
+  const dots=Array.from({length:g.slots},(_,i)=>`<div class="slot-dot ${i<g.taken?'slot-taken':'slot-open'}"></div>`).join('');
+  const escrowPill=g.escrow?`<span class="escrow-pill">🛡️ Escrow</span>`:'';
+  const ottPill=g.ottRisk?`<span class="ott-warn-pill">⚠️ ToS</span>`:'';
+  const relScore=g.adminScore?`<div class="rel-score" style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--c-mint);font-weight:600;margin-top:2px"><div style="width:40px;height:3px;background:var(--c-border);border-radius:999px;overflow:hidden"><div style="height:100%;border-radius:999px;background:var(--c-mint);width:${g.adminScore.uptime}%"></div></div>${g.adminScore.uptime}% uptime</div>`:'';
+  const feeNote=`<div style="font-size:10px;color:var(--c-mint);margin-top:4px">💳 ₹${feeAfterPlatform(g.price)}/mo via UPI (fees incl)</div>`;
+  
+  return `<div class="group-card" onclick="openGroupModal('${g.id}')">
+    <div class="group-logo-wrap">${g.icon}</div>
+    <div class="group-info">
+      <div class="group-name">${g.name}</div>
+      <div class="group-plan">${g.plan}</div>
+      ${relScore}
+      <div class="group-slots-row">${dots}<span class="slot-label">&nbsp;${avail} left</span>${escrowPill}${ottPill}</div>
+      ${feeNote}
+    </div>
+    <div class="group-price-col">
+      <div class="group-price">₹${g.price}<span class="group-price-unit">/mo</span></div>
+      <div class="group-orig">₹${g.orig}</div>
+      <div class="save-badge">Save ${pct(g)}%</div>
+    </div>
+  </div>`;
+}
+
+function renderGroups(filter,targetId){
+  const list=filter==='all'?GROUPS:GROUPS.filter(g=>g.cat===filter);
+  const el=document.getElementById(targetId);if(!el)return;
+  el.innerHTML=list.length?list.map(groupCardHTML).join(''):`<div style="text-align:center;padding:40px 20px;color:var(--c-text-muted)">No subscriptions found</div>`;
+}
+
+function handleSearch(val){
+  const filtered=val?GROUPS.filter(g=>g.name.toLowerCase().includes(val.toLowerCase())||g.plan.toLowerCase().includes(val.toLowerCase())):GROUPS;
+  ['groupsList','exploreList'].forEach(id=>{const el=document.getElementById(id);if(!el)return;el.innerHTML=filtered.length?filtered.map(groupCardHTML).join(''):`<div style="text-align:center;padding:40px 20px;color:var(--c-text-muted)">No results for "${val}"</div>`;});
+}
+
+// ══ NAV ══
+const TABS=['home','explore','local','teams','wallet'];
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+  document.querySelectorAll('.desktop-nav .nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav .nav-btn').forEach(b => b.classList.remove('active'));
+  
+  const pg=document.getElementById('page-'+tab);if(pg)pg.classList.add('active');
+  const desktopLinks = Array.from(document.querySelectorAll('.desktop-nav .nav-link'));
+  if(tab==='home' && desktopLinks[0]) desktopLinks[0].classList.add('active');
+  if(tab==='explore' && desktopLinks[1]) desktopLinks[1].classList.add('active');
+  if(tab==='local' && desktopLinks[2]) desktopLinks[2].classList.add('active');
+  if(tab==='teams' && desktopLinks[3]) desktopLinks[3].classList.add('active');
+  if(tab==='wallet' && desktopLinks[4]) desktopLinks[4].classList.add('active');
+  
+  const nb=document.getElementById('nav-'+tab);if(nb)nb.classList.add('active');
+  if(tab==='explore')renderGroups('all','exploreList');
+  window.scrollTo(0,0);
+}
+
+// ══ CAROUSEL ══
+let carouselIndex = 0;
+function scrollCarousel(dir) {
+  const track = document.getElementById('carouselTrack');
+  const slides = document.querySelectorAll('.carousel-slide');
+  const slideWidth = slides[0].offsetWidth + 20; // width + gap
+  const maxIndex = slides.length - 3; // roughly showing 3 at a time
+  
+  carouselIndex += dir;
+  if(carouselIndex < 0) carouselIndex = 0;
+  if(carouselIndex > maxIndex) carouselIndex = maxIndex;
+  
+  track.style.transform = `translateX(-${carouselIndex * slideWidth}px)`;
+}
+
+// ══ GROUP MODAL ══
+function openGroupModal(id){
+  const g=GROUPS.find(x=>x.id===id);if(!g)return;
+  const avail=g.slots-g.taken;
+  const totalUPI=feeAfterPlatform(g.price);
+  const savingAfterFee=g.orig-totalUPI;
+  
+  document.getElementById('gdSheet').innerHTML=`
+    <button class="modal-close" onclick="closeModal('gdModal')">✕</button>
+    <div class="gd-header">
+      <div class="gd-logo">${g.icon}</div>
+      <div>
+        <div class="gd-name">${g.name}</div>
+        <div class="gd-plan">${g.plan}</div>
+        <div class="save-badge" style="margin-top:8px">Save ${pct(g)}% vs individual</div>
+      </div>
+    </div>
+    <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:12px;padding:16px;margin-bottom:20px">
+      <div style="color:var(--c-text);font-size:14px;font-weight:600;margin-bottom:12px">Payment Breakdown</div>
+      <div class="gd-row"><span class="gd-label">Your share</span><span class="gd-value">₹${g.price}/mo</span></div>
+      <div class="gd-row"><span class="gd-label">Platform fee (7.5%)</span><span class="gd-value">₹${totalUPI-g.price}</span></div>
+      <div class="gd-row" style="border-top:1px solid var(--c-border);padding-top:12px"><span class="gd-label" style="color:var(--c-text);font-weight:700">Total via UPI</span><span class="gd-value" style="color:var(--c-mint);font-weight:700">₹${totalUPI}/mo</span></div>
+    </div>
+    <div class="gd-row"><span class="gd-label">Group admin</span><span class="gd-value">${g.admin}</span></div>
+    <div class="gd-row"><span class="gd-label">Available Slots</span><span class="gd-value">${avail} of ${g.slots} left</span></div>
+    <button class="join-btn" onclick="showToast('🎉 Joined! UPI mandate set up. Funds in escrow.')">🛡️ Join securely via UPI</button>
+  `;
+  document.getElementById('gdModal').classList.add('open');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.getElementById('gdModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+let _tt;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+// ══════════════════════════════════════
+// STRATEGIC INTELLIGENCE REPORT
+// ══════════════════════════════════════
+
+const FEEDBACKS_DATA = [
+  {
+    num: '01',
+    title: 'The Admin Trust Crisis & Telemetry Escrow Integration',
+    priority: 'P0',
+    pillar: 'Features / Services',
+    obs: 'When a public subscription group\'s host admin goes unresponsive, updates credentials, or kicks active co-tenants, paying members lose access with no immediate automated recourse. Play Store records highlight recurring patterns where admins collect funds and instantly change account passwords or profile pins. The platform operates on a passive, tracking-delayed model, offering admins an unmanaged 12-hour response buffer before support teams step in manually. Furthermore, the platform heavily forces "Continue with WhatsApp" as its primary identity gateway, creating deep-link redirects on iOS and leaving users locked out of their historical purchase ledgers if they lose access to their Meta social account.',
+    prob: 'This structural gap creates a critical trust bottleneck. Money changes hands before service validity is verified, turning the marketplace into a high-churn experience where users drop off after a single bad interaction. For a lean 3-person team relying on 90%+ AI automation, manual fraud dispute resolution cannot scale efficiently. This lack of identity safety lowers user lifetime value (LTV) and causes negative public reviews that depress the platform\'s organic acquisition funnel.',
+    ship: `<div class="fb-step-list">
+  <div class="fb-step-item"><strong>1. Member Payment</strong>The initial transaction initiated by the co-tenant at the start of the billing cycle.</div>
+  <div class="fb-step-item"><strong>2. 48-Hour Smart Escrow Hold</strong>Funds are held in a secure vault. Disbursement is paused until the validation window passes without service access flags.</div>
+  <div class="fb-step-item"><strong>3. Real-Time Security Gate</strong>A continuous monitoring layer that triggers an Automated Lock if either:<br/>• OTP Request Target exceeds screen limits (L > S + 1).<br/>• Geo-Velocity Spike detected (ΔD > 250km / Δt < 1hr).</div>
+  <div class="fb-step-item"><strong>4. Release to Admin Wallet</strong>Final transfer of funds to the group host once telemetry verification and escrow duration are successfully completed.</div>
+</div>
+<p style="margin-bottom:8px"><strong>Subscription Escrow Vault:</strong> Route all customer transaction funds into a 48-hour rolling escrow hold at the start of each billing cycle. Disburse funds to the group admin only when the verification window passes without user-flagged service access downtime.</p>
+<p style="margin-bottom:8px"><strong>Inverted Authentication & Backup Identity:</strong> Demote the third-party WhatsApp authentication layer to an optional post-onboarding notifications toggle. Enforce standard Phone OTP with a 6-digit PIN as the primary identity ledger, anchored by an optional backup email registration to protect platform data resilience.</p>
+<p><strong>Proxy-Based Telemetry Gate:</strong> Route all downstream account authentication and streaming OTP requests natively through the internal Subspace communication interface. Deploy an automated backend rate-limiting engine that continuously checks login frequency against official screen limits. If login request spikes cross geographic distance thresholds, automatically freeze the admin’s payout wallet, reduce their public Admin Reliability Score, and return funds to the impacted members.</p>`,
+    evidence: '<strong>Direct Screenshot Evidence:</strong> Visual proof of immediate, unmediated logout from shared accounts after upfront cash collection.',
+    action: "closeAnalysis(); openGroupModal('spotify');"
+  },
+  {
+    num: '02',
+    title: 'The Local Subscription Marketplace Disconnect',
+    priority: 'P0',
+    pillar: 'GTM & ICPs',
+    obs: 'Subspace\'s core messaging explicitly positions "India\'s first subscription marketplace for local providers" as a key differentiator and business moat. However, a hands-on walkthrough reveals that this feature is completely absent from the actual app marketplace. Available shared groups are restricted entirely to major global/national streaming and digital services (Netflix, Prime Video, Hotstar, Spotify). There is no functional onboarding flow or self-serve framework enabling local offline or online merchants—such as regional gyms, language tutors, premium newsletter writers, or local co-working spaces—to list and monetize their subscription programs.',
+    prob: 'This mismatch creates a severe platform credibility risk for prospective partners, investors, or expert evaluators testing the live application. It also represents a massive missed revenue opportunity. While national fintech players (like PhonePe, CRED, or GPay) dominate generic digital gift cards, they lack the local hyper-density required to manage hyper-local subscriptions. By leaving this segment completely un-activated, Subspace loses out on highly stable, predictable B2B2C SaaS platform fees (estimated ₹199–499/month per merchant).',
+    ship: `<div class="fb-diagram"><div class="fb-diag-ascii">[ Merchant Web Onboarding ] ──► [ Automated GST/Identity Check ] ──► [ City-Gated Distribution Feed ]
+                                                               │
+                                                               ▼
+[ Dynamic Demand Waitlist ] ◄── [ Notify Me Prompt ] ◄── Out-of-Region Detection ┘</div></div>
+<p style="margin-bottom:8px"><strong>Lightweight Self-Serve Portal:</strong> Launch a simple merchant onboarding portal. Local service businesses can enter their company name, transactional summary, monthly pricing tier, UPI payout ID, and a mandatory 30-day initial trial gate.</p>
+<p style="margin-bottom:8px"><strong>City-Gated Location Feeds:</strong> Surface these hyper-local listings within a dedicated, location-filtered "Local Marketplace" discovery tab.</p>
+<p style="margin-bottom:8px"><strong>Demand-Capture Waitlists:</strong> For out-of-region users, display a high-intent demand-capture waitlist modal: "Local subscriptions are launching in your region next—enter your city to notify me."</p>
+<p style="margin-bottom:8px"><strong>Monetization Engine:</strong> Charge validated local merchants a flat SaaS platform fee of ₹299/month after a 90-day introductory runway. This builds a highly stable B2B2C monthly recurring revenue line at near-zero marginal cost.</p>
+<p><strong>Trade-off Rationale:</strong> Onboarding regional merchants increases operational monitoring risks, as lower-quality merchants who ghost clients will replicate the admin fraud loop. Mitigation: Require a verified corporate business document check upfront, and bind their transactions to the exact same 48-hour validation escrow detailed in Feedback #1.</p>`,
+    action: "closeAnalysis(); switchTab('local');"
+  },
+  {
+    num: '03',
+    title: 'Proactive Mitigation of Global Streaming Restrictions',
+    priority: 'P0',
+    pillar: 'Competitor Analysis',
+    obs: 'Subspace\'s highest-velocity consumer category—shared group subscriptions—is built primarily on top of users informally sharing individual account credentials across unrelated co-tenants. Major streaming entertainment networks are deploying strict household account verification checks, geographic IP locking, and smart device fingerprinting rules to stop password sharing. Netflix has natively launched official paid-sharing tiers ("Add an Extra Member" for ₹149/month) across India. Despite these macro policy adjustments, the Subspace app provides no user-facing transparency or functional plan adaptation strategies.',
+    prob: 'This represents an immediate risk to the core business model. In global markets where streamers have activated device-fingerprinting rules, third-party coordination tools that rely entirely on account sharing lose 40% to 70% of their active user base within two quarters. Subspace operates with asymmetric risk: streamers do not require Subspace\'s footprint, but Subspace has a massive ₹36.5 Cr ARR pool to protect from sudden household geo-blocking updates.',
+    ship: `<div class="fb-diagram">
+  <div style="text-align:center; font-weight:bold; color:#f3f4f6; margin-bottom:8px;">Subspace Compliance Transition Hub</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:11px;color:#a5b4fc;">
+    <div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:4px;text-align:center;border:1px solid rgba(255,255,255,0.1)"><strong>Legitimate Multi-Seat Promotion</strong><br/>Prioritize Official Family Plans<br/>Build "Compliant-Sharing Wizard"</div>
+    <div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:4px;text-align:center;border:1px solid rgba(255,255,255,0.1)"><strong>Bulk API B2B Bundles</strong><br/>Coordinate Retention Pitches<br/>Launch White-Labeled B2B API</div>
+  </div>
+</div>
+<p style="margin-bottom:8px"><strong>Refreeze Discovery Layouts:</strong> Reposition Subspace's core narrative from "credential sharing" to an Official Group Billing Coordinator. Update the home recommendation matrix to prioritize services that natively include legal, multi-seat configurations (e.g., YouTube Premium Family, Spotify Family).</p>
+<p style="margin-bottom:8px"><strong>Compliant-Sharing Wizard:</strong> Build an interactive in-app setup guide instructing users how to manage official family seats cleanly and distribute expenses via Subspace's automated ledger layer.</p>
+<p><strong>Official B2B API Bundles:</strong> Leverage the platform's aggregate transactional usage logs to pitch direct B2B integrations to local and regional Indian OTT apps. Demonstrate with hard data that Subspace groups show significantly lower churn and higher engagement metrics relative to individual consumers. If declined, leverage the backend Negotiate API to package bulk, discounted individual licenses into official consumer bundles that compete effectively on price without violating third-party terms of service.</p>`,
+    action: "closeAnalysis(); openGroupModal('netflix-p');"
+  },
+  {
+    num: '04',
+    title: 'Eliminating Wallet Transaction Friction & Exit Barriers',
+    priority: 'P1',
+    pillar: 'UX',
+    obs: 'To participate in subscription splits or purchase gift vouchers, users must load money into an internal, closed-loop wallet ecosystem. Community logs and transaction records highlight three clear friction points:<br/><br/>• <strong>The 5% + ₹5 Wallet Fee:</strong> A surprise fee deduction is applied across wallet loads or withdrawals without an itemized breakdown on the pre-payment sheet.<br/>• <strong>Mandatory Funding Gate:</strong> Users cannot complete direct, single-tap UPI pass-through payments to join groups; funds must route through the internal wallet.<br/>• <strong>Asymmetric Verification:</strong> The platform allows frictionless, zero-KYC deposits, but locks balances behind a slow, manual KYC tracking loop when users attempt to withdraw remaining funds.',
+    prob: 'For a platform focused on micro-savings, charging a premium fee to load transaction capital creates severe friction. If an early earner saves ₹100/month by joining a group but pays high fees to load their wallet balance, the financial benefit disappears. Forcing users to pre-commit capital before seeing immediate service value goes against the frictionless, instant-payment patterns established by modern consumer apps in India. This exit friction creates an unpleasant user experience that drives negative community reviews.',
+    ship: `<div class="fb-diagram"><div class="fb-diag-ascii">[ Direct Checkout Sheet ] ──► [ Single-Tap UPI AutoPay Mandate ] ──► [ Direct Group Entry ]
+                                         │
+                                         ▼
+                    [ Symmetric Automated KYC Onboarding Gate ]
+                        (PAN / DigiLocker API Verified Upfront)</div></div>
+<p style="margin-bottom:8px"><strong>Direct UPI AutoPay Passing:</strong> Completely phase out the mandatory closed-loop wallet requirement for primary B2C checkouts. Integrate direct UPI AutoPay Mandates at checkout, allowing recurring monthly pool splits to settle straight from the user's linked bank account without manual wallet loading fees.</p>
+<p style="margin-bottom:8px"><strong>Symmetric Verification Onboarding:</strong> If an internal wallet balance is necessary for escrow management, deploy a strict Symmetric KYC Policy. Enforce lightweight, automated identity verification (via instant PAN or DigiLocker API hooks) upfront before any wallet funding is allowed, completely removing manual withdrawal holding loops.</p>
+<p><strong>Pre-Payment Transparency:</strong> Enforce a clear, itemized breakdown on the final checkout view (Base Split + Handling Fee = Total) to maximize transaction transparency and lower drop-off rates.</p>`,
+    evidence: '<strong>Direct Screenshot Evidence:</strong><br/>• 1st image: User \'hermitinthehills\' calling out the 5% + ₹5 wallet loading and cash-out fee structures.<br/>• 2nd image: Reviewer noting money trapped inside the app wallet, delayed balance approvals, and deposit errors.<br/>• 3rd image: Subspace.money production dashboard highlighting the closed-loop wallet friction layer that systematically intercepts transaction intent by enforcing an upfront, manual funding gate.',
+    action: "closeAnalysis(); switchTab('wallet');"
+  },
+  {
+    num: '05',
+    title: '"Subspace for Teams" Flexi-Benefit Marketplace',
+    priority: 'P2',
+    pillar: 'Potential Collaborations / GTM',
+    obs: 'Subspace currently sells only directly to consumers (B2C). There is no "Subspace for Business" option on the portal, no corporate dashboard, no bulk credit generation, and no system for HR teams to distribute Subspace benefit bundles as tax-free employee perks. The platform\'s offering—including discounted subscriptions, food vouchers, and gadget rentals—aligns perfectly with modern employee benefits, yet remains entirely un-activated in the enterprise space.',
+    prob: 'Acquiring consumers individually in the competitive Indian fintech space is highly expensive and CAC-constrained. Meanwhile, Indian startups and corporations spend massive budgets annually on employee perks (wellness, food, and productivity subscriptions). This is a ₹12,000+ Cr market dominated by rigid legacy systems like Sodexo or Zaggle. By ignoring this channel, Subspace misses out on a highly efficient growth engine: a single B2B contract can bring in 500+ active users at near-zero CAC with highly stable retention and clean corporate billing structures.',
+    ship: `<div class="fb-diagram"><div class="fb-diag-ascii">[ HR Central Dashboard ] ──► Bulk Credit Allocation ──► Direct Email Distribution
+                                                    │
+                                                    ▼
+[ Native App Workspace ] ◄── Employee Claim Mapping ◄── Internal Token Wallet Applied</div></div>
+<p style="margin-bottom:8px"><strong>Central HR Enterprise Portal:</strong> Create a simple, self-serve web dashboard where corporate HR teams can purchase Subspace credits in bulk (e.g., ₹500–2,000/employee/month) and distribute them to employees via automated invite tokens.</p>
+<p style="margin-bottom:8px"><strong>Unified Benefit Consumption:</strong> Employees redeem these credits in the Subspace app across any service they choose, such as splitting a Netflix bill, renting work laptops, or purchasing discounted Swiggy/Zomato food vouchers.</p>
+<p><strong>B2B Distribution Partnerships:</strong> To avoid building a costly corporate sales team, partner directly with existing HR-tech platforms (such as Darwinbox or Freshworks networks) to offer Subspace as an add-on employee wellness perk, scaling distribution efficiently.</p>`,
+    evidence: '<strong>Direct Screenshot Evidence:</strong> Play Store feedback of massive operational failure patterns under B2C execution.<br/>• 1st image: Rajendra Karmakar noting failed gift card fulfillment processing with no response.<br/>• 2nd image: Adi highlighting Jio Hotstar gift cards remaining in permanent transaction deadlocks.',
+    action: "showToast('🚀 B2B Enterprise Portal opens in new secure tab (Mock)');"
+  }
+];
+
+function openAnalysis(){
+  const overlay = document.getElementById('analysisOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if(!overlay.dataset.rendered){
+    renderAnalysisFeedbacks();
+    overlay.dataset.rendered = '1';
+  }
+}
+
+function closeAnalysis(){
+  document.getElementById('analysisOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderAnalysisFeedbacks(){
+  const container = document.getElementById('feedbacksContainer');
+  container.innerHTML = FEEDBACKS_DATA.map((fb) => {
+    let pClass = fb.priority === 'P0' ? 'fb-tag-priority' : 
+                 fb.priority === 'P1' ? 'fb-tag-priority p1' : 'fb-tag-priority p2';
+    
+    let evidenceHTML = fb.evidence ? `
+        <div class="fb-section" style="margin-top:20px; border-top:1px solid var(--c-border); padding-top:20px;">
+          <div class="fb-sec-label">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c-purple)"></span> Evidence Sourced
+          </div>
+          <div class="evidence-box">${fb.evidence}</div>
+        </div>` : '';
+
+    return `
+    <div class="fb-card">
+      <div class="fb-card-top">
+        <div class="fb-num">${fb.num}</div>
+        <div class="fb-info">
+          <div class="fb-card-title">${fb.title}</div>
+          <div class="fb-tags">
+            <span class="fb-tag ${pClass}">${fb.priority} Priority</span>
+            <span class="fb-tag fb-tag-pillar">${fb.pillar}</span>
+          </div>
+        </div>
+        <div style="flex-shrink:0;">
+          <button class="demo-btn" onclick="${fb.action}">
+            👁️ View in Demo
+          </button>
+        </div>
+      </div>
+      <div class="fb-body">
+        <div class="fb-section">
+          <div class="fb-sec-label">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c-text-muted)"></span> Observed
+          </div>
+          <div class="fb-sec-text">${fb.obs}</div>
+        </div>
+        <div class="fb-section">
+          <div class="fb-sec-label">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c-danger)"></span> Problem
+          </div>
+          <div class="fb-sec-text">${fb.prob}</div>
+        </div>
+        <div class="fb-section">
+          <div class="fb-sec-label">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c-mint)"></span> Ship Instead
+          </div>
+          <div class="fb-sec-text">${fb.ship}</div>
+        </div>
+        ${evidenceHTML}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ INIT ══
+renderGroups('all','groupsList');
+</script>
+</body>
+</html>
